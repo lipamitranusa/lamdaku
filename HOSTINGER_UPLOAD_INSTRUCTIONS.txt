@@ -1,0 +1,276 @@
+🌐 HOSTINGER UPLOAD INSTRUCTIONS - LAMDAKU.COM
+Generated: 13 Juni 2025 (UPDATED WITH ACTUAL BACKEND)
+
+================================================================================
+📋 PANDUAN UPLOAD LENGKAP KE HOSTINGER - BACKEND TERINTEGRASI
+================================================================================
+
+🎯 TARGET URLS:
+   ✅ Frontend: https://lamdaku.com
+   ✅ Backend API: https://api.lamdaku.com/api/v1
+
+📁 FILES YANG TELAH DISIAPKAN:
+   ✅ lamdaku-complete-hostinger.zip (Frontend + Actual Laravel Backend)
+   ✅ Backend from: D:\laragon\www\LAMDAKU\lamdaku-cms-backend
+   ✅ Production configuration applied
+
+🚀 BACKEND FEATURES READY:
+   ✅ Company Info API with logo management
+   ✅ Services API with full CRUD
+   ✅ Contact form handling
+   ✅ Timeline/history API
+   ✅ Database migrations ready
+   ✅ CORS configured for lamdaku.com
+   ✅ Security headers enabled
+
+================================================================================
+📤 STEP 1: UPLOAD FILES KE HOSTINGER
+================================================================================
+
+A. 🌐 MAIN DOMAIN UPLOAD (lamdaku.com)
+   
+   1. Login ke Hostinger Panel → File Manager
+   2. Navigate ke: /public_html/
+   3. DELETE semua file default (index.html, etc.)
+   4. Upload & Extract: lamdaku-complete-hostinger.zip
+   5. Move frontend files to root:
+      
+      Files to move to /public_html/:
+      ✅ index.html
+      ✅ static/ folder  
+      ✅ favicon.ico
+      ✅ favicon.png
+      ✅ favicon.svg
+      ✅ asset-manifest.json
+      ✅ .htaccess
+      
+      Keep in /public_html/api/:
+      ✅ Complete Laravel backend from actual development
+      ✅ All controllers, models, migrations
+      ✅ Production .env configuration
+      ✅ CORS and security setup
+
+B. 🔧 SUBDOMAIN SETUP (api.lamdaku.com)
+   
+   1. Hostinger Panel → Domains → Subdomains
+   2. Create New Subdomain:
+      - Subdomain: api
+      - Domain: lamdaku.com
+      - Document Root: /public_html/api/public
+   3. Wait for DNS propagation (5-15 minutes)
+
+================================================================================
+🗄️ STEP 2: DATABASE SETUP
+================================================================================
+
+A. 📊 CREATE DATABASE
+   
+   1. Hostinger Panel → Databases → MySQL Databases
+   2. Create Database:
+      - Database Name: [auto-generated] u123456789_lamdaku
+      - Username: [auto-generated] u123456789_user  
+      - Password: [GENERATE STRONG PASSWORD]
+   3. Note down these credentials!
+
+B. ⚙️ CONFIGURE .env FILE
+   
+   1. Navigate to: /public_html/api/.env
+   2. Update these lines:
+   
+   ```env
+   # Update APP_KEY
+   APP_KEY=base64:[GENERATE_NEW_KEY]
+   
+   # Update Database Credentials
+   DB_DATABASE=u123456789_lamdaku
+   DB_USERNAME=u123456789_user
+   DB_PASSWORD=[YOUR_STRONG_PASSWORD]
+   
+   # Update URLs
+   APP_URL=https://api.lamdaku.com
+   FRONTEND_URL=https://lamdaku.com
+   ```
+
+================================================================================
+🔧 STEP 3: SERVER CONFIGURATION
+================================================================================
+
+A. 🔑 SSL CERTIFICATE SETUP
+   
+   1. Hostinger Panel → Security → SSL/TLS
+   2. Enable SSL for:
+      ✅ lamdaku.com
+      ✅ api.lamdaku.com
+   3. Force HTTPS Redirect: Enable
+
+B. 📡 DNS VERIFICATION
+   
+   1. Check domains point to server:
+      ✅ lamdaku.com → Server IP
+      ✅ api.lamdaku.com → Server IP
+   2. Wait for propagation (24-48 hours max)
+
+================================================================================
+🚀 STEP 4: LARAVEL SETUP COMMANDS
+================================================================================
+
+A. 🖥️ VIA HOSTINGER TERMINAL/SSH
+   
+   ```bash
+   cd /public_html/api
+   
+   # Generate Laravel application key
+   php artisan key:generate
+   
+   # Run database migrations
+   php artisan migrate --force
+   
+   # Cache configuration for production
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   
+   # Set proper permissions
+   chmod -R 755 storage bootstrap/cache
+   chmod -R 777 storage
+   
+   # Create storage symbolic link
+   php artisan storage:link
+   ```
+
+B. 🔍 IF NO SSH ACCESS (File Manager only)
+   
+   1. Download SSH client atau use Hostinger web terminal
+   2. Or manually set permissions via File Manager:
+      - storage/ → 777 permissions
+      - bootstrap/cache/ → 755 permissions
+
+================================================================================
+🧪 STEP 5: TESTING DEPLOYMENT
+================================================================================
+
+A. ✅ FRONTEND TESTING
+   
+   1. Open: https://lamdaku.com
+   2. Check pages load:
+      ✅ Home page
+      ✅ Services page  
+      ✅ Profile page
+      ✅ Contact page
+   3. Verify responsive design
+   4. Check logo displays correctly (64px)
+
+B. ✅ BACKEND API TESTING
+   
+   1. Test API endpoints:
+      ✅ https://api.lamdaku.com/api/v1/services
+      ✅ https://api.lamdaku.com/api/v1/company-info
+   2. Should return JSON data
+   3. Check CORS headers work
+
+C. ✅ INTEGRATION TESTING
+   
+   1. Frontend should load data from backend
+   2. No "API tidak tersedia" warnings
+   3. Dynamic content displays
+   4. Contact form submissions work
+
+================================================================================
+🔧 STEP 6: HOSTINGER-SPECIFIC OPTIMIZATIONS
+================================================================================
+
+A. 📈 PERFORMANCE
+   
+   1. Hostinger Panel → Advanced → Cache Manager
+   2. Enable LiteSpeed Cache
+   3. Configure cache rules:
+      - Static files: 1 year
+      - HTML: 1 hour
+      - API responses: No cache
+
+B. 🌐 CDN (Optional)
+   
+   1. Hostinger Panel → Advanced → CDN
+   2. Enable Hostinger CDN
+   3. Configure for static assets
+
+================================================================================
+🚨 TROUBLESHOOTING GUIDE
+================================================================================
+
+🔴 COMMON ISSUES & SOLUTIONS:
+
+1. ❌ "This site can't be reached"
+   → Check DNS propagation
+   → Verify subdomain document root
+   → Ensure SSL certificate is active
+
+2. ❌ Laravel 500 Error
+   → Check /public_html/api/storage/logs/laravel.log
+   → Verify .env database credentials
+   → Ensure APP_KEY is generated
+
+3. ❌ CORS Error in Browser
+   → Check /public_html/api/config/cors.php
+   → Verify allowed_origins includes https://lamdaku.com
+   → Clear browser cache
+
+4. ❌ Database Connection Error
+   → Double-check database credentials in .env
+   → Verify database exists in Hostinger panel
+   → Test connection: php artisan tinker → DB::connection()->getPdo();
+
+5. ❌ React Router Not Working
+   → Check .htaccess rules in /public_html/
+   → Ensure RewriteEngine On
+   → Verify fallback to index.html
+
+6. ❌ Logo Not Loading
+   → Check API endpoint: https://api.lamdaku.com/api/v1/company-info
+   → Verify storage link: php artisan storage:link
+   → Check file permissions on storage/
+
+================================================================================
+📊 EXPECTED FINAL RESULT
+================================================================================
+
+✅ WORKING URLS:
+   🌐 https://lamdaku.com (React Frontend)
+   🔗 https://api.lamdaku.com/api/v1 (Laravel API)
+
+✅ FEATURES WORKING:
+   📱 Responsive design
+   🎨 64px logo in header and footer
+   📄 All pages accessible (Home, Services, Profile, Contact)
+   🔄 Dynamic data from backend API
+   📧 Contact form submissions
+   🔒 HTTPS encryption
+   🚀 Optimized performance
+
+✅ BROWSER CONSOLE:
+   ✅ No CORS errors
+   ✅ No "API tidak tersedia" warnings
+   ✅ Successful API calls
+   ✅ All assets loading correctly
+
+================================================================================
+📞 SUPPORT CONTACTS
+================================================================================
+
+🆘 IF YOU NEED HELP:
+   1. Check Hostinger Knowledge Base
+   2. Contact Hostinger Support (24/7)
+   3. Review Laravel Documentation
+   4. Test locally first before deploying
+
+================================================================================
+🎉 DEPLOYMENT SUCCESS!
+================================================================================
+
+Setelah mengikuti panduan ini, website LAMDAKU akan:
+✅ Live di https://lamdaku.com
+✅ API berfungsi di https://api.lamdaku.com
+✅ Fully functional dengan semua fitur
+✅ Ready untuk production use!
+
+Good luck with your deployment! 🚀

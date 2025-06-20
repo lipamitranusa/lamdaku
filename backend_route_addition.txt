@@ -1,0 +1,7 @@
+// Tambahkan ini ke routes/api.php di backend D:\laragon\www\LAMDAKU\lamdaku-cms-backend
+
+// Di bagian use statements, tambahkan:
+use App\Http\Controllers\Api\VisionMissionController;
+
+// Di bagian Route::prefix('v1')->group, tambahkan:
+Route::get('vision-mission', [VisionMissionController::class, 'index']);

@@ -1,0 +1,51 @@
+﻿LAMDAKU Deployment Instructions - production
+Generated: 06/13/2025 16:28:42
+
+1. Upload Files:
+   - Upload and extract: 
+   - Target location: /domains/lamdaku.com/public_html
+
+2. Server Configuration:
+   - Ensure web server points to: /domains/lamdaku.com/public_html
+   - SSL certificate configured for: https://lamdaku.com
+
+3. DNS Configuration:
+   - Point domain to server IP
+   - Verify: https://lamdaku.com
+
+4. Backend API:
+   - Ensure API is running at: https://api.lamdaku.com/api/v1
+   - CORS configured for: https://lamdaku.com
+
+5. Testing:
+   - Test frontend: https://lamdaku.com
+   - Test API: https://api.lamdaku.com/api/v1/services
+   - Verify all pages load correctly
+
+6. Post-deployment:
+   - Clear browser cache
+   - Test from different devices
+   - Monitor error logs
+
+Files included in package:
+  - static
+  - asset-manifest.json
+  - debug-logo.js
+  - favicon.ico
+  - favicon.png
+  - favicon.svg
+  - index.html
+  - logo-force.js
+  - css
+  - js
+  - main.692358a5.css
+  - main.692358a5.css.map
+  - main.445b9132.js
+  - main.445b9132.js.LICENSE.txt
+  - main.445b9132.js.map
+
+
+Environment Variables Used:
+  NODE_ENV: production
+  REACT_APP_ENV: production
+  REACT_APP_API_URL: https://api.lamdaku.com/api/v1

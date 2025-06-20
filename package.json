@@ -1,0 +1,51 @@
+{
+  "name": "lamdaku-company-profile",
+  "version": "1.0.0",
+  "description": "Website profil LAMDAKU - Lembaga akreditasi untuk klinik, laboratorium, dan puskesmas di Indonesia.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "build:staging": "REACT_APP_ENV=staging npm run build",
+    "build:production": "REACT_APP_ENV=production npm run build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "deploy:staging": "npm run build:staging && echo 'Upload build folder to staging server'",
+    "deploy:production": "npm run build:production && echo 'Upload build folder to production server'",
+    "serve:local": "serve -s build -l 3000",
+    "analyze": "npm run build && npx serve -s build"
+  },
+  "keywords": [
+    "lamdaku",
+    "akreditasi",
+    "healthcare",
+    "react",
+    "indonesia"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "lucide-react": "^0.321.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
+    "react-router-dom": "^6.8.1",
+    "react-scripts": "5.0.1"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "homepage": "http://yourcompanywebsite.com"
+}
