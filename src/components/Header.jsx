@@ -32,11 +32,11 @@ const Header = () => {
           )}
           {companyInfo.name}
         </Link>
-        
-        <ul className={`nav-links ${isMenuOpen ? 'nav-open' : ''}`}>
+          <ul className={`nav-links ${isMenuOpen ? 'nav-open' : ''}`}>
           <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Beranda</Link></li>
           <li><Link to="/services" onClick={() => setIsMenuOpen(false)}>Layanan</Link></li>
           <li><Link to="/profile" onClick={() => setIsMenuOpen(false)}>Profil</Link></li>
+          <li><Link to="/articles" onClick={() => setIsMenuOpen(false)}>Artikel</Link></li>
           <li><Link to="/contact" onClick={() => setIsMenuOpen(false)}>Kontak</Link></li>
         </ul>
         

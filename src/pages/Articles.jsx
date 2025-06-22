@@ -1,57 +1,112 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaClock, FaUser, FaEye, FaTags } from 'react-icons/fa';
 import ApiService from '../services/api';
+import { mockArticles, mockFeaturedArticles } from '../data/mockArticles';
+
+// Import new components
+import FeaturedCarousel from '../components/Articles/FeaturedCarousel';
+import ArticleCard from '../components/Articles/ArticleCard';
+import SearchAndFilter from '../components/Articles/SearchAndFilter';
+import ArticleStats from '../components/Articles/ArticleStats';
+import { LoadingState, ErrorState, NoResultsState } from '../components/Articles/ArticleStates';
 
 const Articles = () => {
   const [articles, setArticles] = useState([]);
   const [featuredArticles, setFeaturedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('semua');
+  const [error, setError] = useState(null);  const [selectedCategory, setSelectedCategory] = useState('semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState(['semua']);
-
+  const [totalViews, setTotalViews] = useState(0);
+  const [articlesThisMonth, setArticlesThisMonth] = useState(0);
   useEffect(() => {
     fetchArticlesData();
   }, []);
-
   const fetchArticlesData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch all articles
-      const articlesResponse = await ApiService.getArticles();
-      
-      if (articlesResponse && articlesResponse.success) {
-        setArticles(articlesResponse.data || []);
+      // Try to fetch from API first
+      try {
+        // Fetch all articles
+        const articlesResponse = await ApiService.getArticles();
         
-        // Extract categories dari artikel
-        const articleCategories = articlesResponse.data
-          .map(article => article.category)
-          .filter(Boolean);
-        const uniqueCategories = [...new Set(articleCategories)];
-        setCategories(['semua', ...uniqueCategories]);
+        if (articlesResponse && articlesResponse.success) {
+          const articlesData = articlesResponse.data || [];
+          setArticles(articlesData);
+          
+          // Extract categories dari artikel
+          const articleCategories = articlesData
+            .map(article => article.category)
+            .filter(Boolean);
+          const uniqueCategories = [...new Set(articleCategories)];
+          setCategories(['semua', ...uniqueCategories]);
+
+          // Calculate stats
+          const currentMonth = new Date().getMonth();
+          const currentYear = new Date().getFullYear();
+          const thisMonthArticles = articlesData.filter(article => {
+            const articleDate = new Date(article.created_at || article.published_at);
+            return articleDate.getMonth() === currentMonth && articleDate.getFullYear() === currentYear;
+          });
+          setArticlesThisMonth(thisMonthArticles.length);
+
+          // Calculate total views (if available)
+          const totalViewCount = articlesData.reduce((sum, article) => {
+            return sum + (parseInt(article.view_count) || 0);
+          }, 0);
+          setTotalViews(totalViewCount);
+
+          // Fetch featured articles
+          try {
+            const featuredResponse = await ApiService.getFeaturedArticles();
+            if (featuredResponse && featuredResponse.success) {
+              setFeaturedArticles(featuredResponse.data || []);
+            }
+          } catch (featuredError) {
+            console.warn('Featured articles not available:', featuredError);
+            // Try to get featured from regular articles
+            const featuredFromRegular = articlesData.filter(article => article.is_featured || article.featured);
+            setFeaturedArticles(featuredFromRegular.slice(0, 3));
+          }
+
+          return; // Success, exit function
+        }
+      } catch (apiError) {
+        console.warn('API not available, using mock data:', apiError);
       }
 
-      // Fetch featured articles
-      try {
-        const featuredResponse = await ApiService.getFeaturedArticles();
-        if (featuredResponse && featuredResponse.success) {
-          setFeaturedArticles(featuredResponse.data || []);
-        }
-      } catch (featuredError) {
-        console.warn('Featured articles not available:', featuredError);
-      }
+      // Fallback to mock data if API fails
+      console.log('Loading mock articles data...');
+      setArticles(mockArticles);
+      setFeaturedArticles(mockFeaturedArticles);
+      
+      // Extract categories from mock data
+      const mockCategories = [...new Set(mockArticles.map(article => article.category))];
+      setCategories(['semua', ...mockCategories]);
+
+      // Calculate stats from mock data
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      const thisMonthArticles = mockArticles.filter(article => {
+        const articleDate = new Date(article.created_at || article.published_at);
+        return articleDate.getMonth() === currentMonth && articleDate.getFullYear() === currentYear;
+      });
+      setArticlesThisMonth(thisMonthArticles.length);
+
+      // Calculate total views from mock data
+      const totalViewCount = mockArticles.reduce((sum, article) => {
+        return sum + (parseInt(article.view_count) || 0);
+      }, 0);
+      setTotalViews(totalViewCount);
 
     } catch (error) {
-      console.error('Error fetching articles:', error);
-      setError(error.message);
+      console.error('Error in fetchArticlesData:', error);
+      setError(`Failed to load articles: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
-
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('id-ID', {
       day: 'numeric',
@@ -71,6 +126,15 @@ const Articles = () => {
     setSelectedCategory(category);
   };
 
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+  };
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setSelectedCategory('semua');
+  };
+
   const filteredArticles = articles.filter(article => {
     const matchesSearch = !searchQuery || 
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -81,23 +145,11 @@ const Articles = () => {
     
     return matchesSearch && matchesCategory;
   });
-
   if (loading) {
     return (
       <div className="articles-page">
         <div className="container">
-          <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-            <div style={{ 
-              width: '40px', 
-              height: '40px', 
-              border: '4px solid #f3f3f3',
-              borderTop: '4px solid #2563eb',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 1rem'
-            }}></div>
-            <p style={{ color: '#64748b' }}>Memuat artikel...</p>
-          </div>
+          <LoadingState />
         </div>
       </div>
     );
@@ -107,318 +159,114 @@ const Articles = () => {
     return (
       <div className="articles-page">
         <div className="container">
-          <div style={{ 
-            background: '#fef2f2', 
-            color: '#991b1b', 
-            padding: '1rem', 
-            borderRadius: '0.5rem',
-            margin: '2rem 0',
-            textAlign: 'center'
-          }}>
-            <p><strong>Error:</strong> {error}</p>
-            <button 
-              onClick={fetchArticlesData}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                background: '#dc2626',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.25rem',
-                cursor: 'pointer'
-              }}
-            >
-              Coba Lagi
-            </button>
-          </div>
+          <ErrorState error={error} onRetry={fetchArticlesData} />
         </div>
       </div>
     );
   }
-
   return (
-    <div className="articles-page" style={{ padding: '2rem 0' }}>
-      <div className="container">
+    <div className="articles-page">
+      <div className="container" style={{ padding: '2rem 1rem' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ fontSize: '2.5rem', color: '#1e293b', marginBottom: '1rem' }}>
-            Portal Artikel
+          <h1 style={{ 
+            fontSize: '3rem', 
+            fontWeight: '700',
+            background: 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '1rem',
+            lineHeight: '1.2'
+          }}>
+            Portal Artikel LAMDAKU
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>
-            Temukan artikel terbaru seputar akreditasi, kesehatan, dan industri terkait
+          <p style={{ 
+            fontSize: '1.2rem', 
+            color: '#64748b', 
+            maxWidth: '700px', 
+            margin: '0 auto',
+            lineHeight: '1.6'
+          }}>
+            Temukan wawasan terbaru seputar akreditasi, kesehatan, dan industri terkait. 
+            Dapatkan informasi berkualitas dari para ahli di bidangnya.
           </p>
         </div>
 
-        {/* Search and Filter */}
-        <div style={{ 
-          background: '#f8fafc', 
-          padding: '2rem', 
-          borderRadius: '12px', 
-          marginBottom: '3rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem'
-        }}>
-          {/* Search Box */}
-          <div style={{ position: 'relative', maxWidth: '400px' }}>
-            <FaSearch style={{ 
-              position: 'absolute', 
-              left: '1rem', 
-              top: '50%', 
-              transform: 'translateY(-50%)',
-              color: '#64748b'
-            }} />
-            <input
-              type="text"
-              placeholder="Cari artikel..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem 0.75rem 2.5rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => handleCategoryChange(category)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  border: selectedCategory === category ? '2px solid #2563eb' : '1px solid #d1d5db',
-                  background: selectedCategory === category ? '#2563eb' : 'white',
-                  color: selectedCategory === category ? 'white' : '#374151',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                  textTransform: 'capitalize'
-                }}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Featured Article */}
+        {/* Featured Articles Carousel */}
         {featuredArticles.length > 0 && (
-          <div style={{ marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#1e293b' }}>
-              Artikel Unggulan
-            </h2>
-            <div style={{ 
-              background: 'white', 
-              borderRadius: '12px', 
-              overflow: 'hidden',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1rem'
-            }}>
-              {featuredArticles.slice(0, 2).map((article, index) => (
-                <div key={article.id || index} style={{ padding: '1.5rem' }}>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <span style={{ 
-                      background: '#dc2626', 
-                      color: 'white', 
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold'
-                    }}>
-                      FEATURED
-                    </span>
-                  </div>
-                  <h3 style={{ 
-                    fontSize: '1.25rem', 
-                    fontWeight: 'bold', 
-                    marginBottom: '0.5rem',
-                    color: '#1e293b'
-                  }}>
-                    {article.title}
-                  </h3>
-                  <p style={{ color: '#64748b', marginBottom: '1rem' }}>
-                    {article.excerpt}
-                  </p>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '1rem',
-                    fontSize: '0.875rem',
-                    color: '#6b7280'
-                  }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <FaUser /> {getAuthorName(article.author)}
-                    </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <FaClock /> {formatDate(article.created_at)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <FeaturedCarousel articles={featuredArticles} />
         )}
+
+        {/* Search and Filter */}
+        <SearchAndFilter
+          categories={categories}
+          selectedCategory={selectedCategory}
+          searchQuery={searchQuery}
+          onCategoryChange={handleCategoryChange}
+          onSearchChange={handleSearchChange}
+          totalArticles={articles.length}
+          filteredCount={filteredArticles.length}
+        />
 
         {/* Articles Grid */}
         <div style={{ marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#1e293b' }}>
-            {selectedCategory === 'semua' ? 'Semua Artikel' : `Artikel ${selectedCategory}`}
-          </h2>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '2rem',
+            flexWrap: 'wrap',
+            gap: '1rem'
+          }}>
+            <h2 style={{ 
+              fontSize: '1.75rem', 
+              fontWeight: '700',
+              color: '#1e293b',
+              margin: '0'
+            }}>
+              {selectedCategory === 'semua' ? 'Semua Artikel' : `Artikel ${selectedCategory}`}
+            </h2>
+            <div style={{
+              background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+              color: '#0369a1',
+              padding: '0.5rem 1rem',
+              borderRadius: '20px',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              border: '1px solid #bae6fd'
+            }}>
+              {filteredArticles.length} artikel ditemukan
+            </div>
+          </div>
           
           {filteredArticles.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '3rem',
-              background: '#f8fafc',
-              borderRadius: '12px',
-              color: '#64748b'
-            }}>
-              <p>Tidak ada artikel yang ditemukan.</p>
-            </div>
+            <NoResultsState 
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+              onClearFilters={clearAllFilters}
+            />
           ) : (
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
-              gap: '2rem' 
-            }}>
+            <div className="articles-grid">
               {filteredArticles.map((article, index) => (
-                <div 
+                <ArticleCard 
                   key={article.id || index} 
-                  style={{ 
-                    background: 'white', 
-                    borderRadius: '12px', 
-                    overflow: 'hidden',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.2s ease',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-                  onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-                >
-                  {article.featured_image && (
-                    <div style={{ height: '200px', overflow: 'hidden' }}>
-                      <img 
-                        src={article.featured_image} 
-                        alt={article.title}
-                        style={{ 
-                          width: '100%', 
-                          height: '100%', 
-                          objectFit: 'cover' 
-                        }}
-                      />
-                    </div>
-                  )}
-                  
-                  <div style={{ padding: '1.5rem' }}>
-                    {article.category && (
-                      <div style={{ marginBottom: '0.5rem' }}>
-                        <span style={{ 
-                          background: '#e5e7eb', 
-                          color: '#374151', 
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.75rem',
-                          textTransform: 'uppercase',
-                          fontWeight: 'medium'
-                        }}>
-                          <FaTags style={{ marginRight: '0.25rem' }} />
-                          {article.category}
-                        </span>
-                      </div>
-                    )}
-                    
-                    <h3 style={{ 
-                      fontSize: '1.25rem', 
-                      fontWeight: 'bold', 
-                      marginBottom: '0.5rem',
-                      color: '#1e293b',
-                      lineHeight: '1.4'
-                    }}>
-                      {article.title}
-                    </h3>
-                    
-                    <p style={{ 
-                      color: '#64748b', 
-                      marginBottom: '1rem',
-                      lineHeight: '1.6'
-                    }}>
-                      {article.excerpt}
-                    </p>
-                    
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'space-between',
-                      fontSize: '0.875rem',
-                      color: '#6b7280'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <FaUser /> {getAuthorName(article.author)}
-                        </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <FaClock /> {formatDate(article.created_at)}
-                        </span>
-                      </div>
-                      
-                      {article.view_count && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <FaEye /> {article.view_count}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                  article={article}
+                  index={index}
+                />
               ))}
             </div>
           )}
         </div>
 
-        {/* Statistics */}
-        <div style={{ 
-          background: '#f8fafc', 
-          padding: '2rem', 
-          borderRadius: '12px',
-          textAlign: 'center'
-        }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-            gap: '2rem' 
-          }}>
-            <div>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2563eb' }}>
-                {articles.length}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                Total Artikel
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2563eb' }}>
-                {categories.length - 1}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                Kategori
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2563eb' }}>
-                {featuredArticles.length}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                Artikel Unggulan
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Article Statistics */}
+        <ArticleStats
+          totalArticles={articles.length}
+          totalCategories={categories.length - 1} // Exclude 'semua'
+          featuredArticles={featuredArticles.length}
+          totalViews={totalViews}
+          articlesThisMonth={articlesThisMonth}
+        />
       </div>
     </div>
   );

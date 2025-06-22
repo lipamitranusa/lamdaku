@@ -204,8 +204,7 @@ class ApiService {
   // Vision Mission Goal API
   async getVisionMissionGoal() {
     return this.fetch('/vision-mission-goal');
-  }
-  // Articles API
+  }  // Articles API
   async getArticles() {
     return this.fetch('/articles');
   }
@@ -227,7 +226,7 @@ class ApiService {
   }
 
   async getArticleBySlug(slug) {
-    return this.fetch(`/articles/slug/${slug}`);
+    return this.fetch(`/articles/${slug}`);
   }
 
   async createArticle(articleData) {

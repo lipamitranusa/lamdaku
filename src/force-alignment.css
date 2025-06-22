@@ -1,0 +1,45 @@
+/* FORCE FIX ALIGNMENT - HIGHEST PRIORITY */
+[class*="article-content"] {
+  text-align: left !important;
+}
+
+[class*="article-content"] * {
+  text-align: left !important;
+}
+
+[class*="article-content"] h1,
+[class*="article-content"] h2,
+[class*="article-content"] h3,
+[class*="article-content"] h4,
+[class*="article-content"] h5,
+[class*="article-content"] h6 {
+  text-align: left !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+}
+
+[class*="article-content"] p {
+  text-align: left !important;
+  margin-bottom: 1.5rem !important;
+}
+
+[class*="article-content"] p:not([style*="background-color"]) {
+  text-align: justify !important;
+}
+
+[class*="article-content"] ul,
+[class*="article-content"] ol,
+[class*="article-content"] li {
+  text-align: left !important;
+}
+
+[class*="article-content"] blockquote {
+  text-align: left !important;
+}
+
+/* Info boxes should be left-aligned */
+[class*="article-content"] p[style*="background-color"] {
+  text-align: left !important;
+}
