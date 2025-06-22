@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaFilter, FaSpinner, FaClock, FaUser, FaEye } from 'react-icons/fa';
 import ArticleCard from '../components/ArticleCard';
 import apiService from '../services/api';
@@ -18,6 +19,8 @@ const Articles = () => {
     'semua', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'olahraga'
   ]);
   const [breakingNews, setBreakingNews] = useState('Selamat datang di portal berita terkini kami - Dapatkan informasi terbaru seputar teknologi dan inovasi');
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchArticles();
     fetchFeaturedArticle();
@@ -163,7 +166,7 @@ const Articles = () => {
           {/* Featured Article Section */}
           <div className="featured-section">
             {featuredArticle && (
-              <a href={`/artikel/${featuredArticle.slug}`} className="featured-article">
+              <Link to={`/artikel/${featuredArticle.slug}`} className="featured-article">
                 <img 
                   src={featuredArticle.image || '/api/placeholder/800/350'} 
                   alt={featuredArticle.title}
@@ -180,15 +183,14 @@ const Articles = () => {
                     <span><FaEye /> {Math.floor(Math.random() * 1000) + 100} views</span>
                   </div>
                 </div>
-              </a>
+              </Link>
             )}
 
             {/* Articles Grid Below Featured */}
             <div className="articles-grid">
               <h2>Berita Terbaru</h2>
-              <div className="news-articles-list">
-                {filteredArticles.slice(0, 6).map(article => (
-                  <a key={article.id} href={`/artikel/${article.slug}`} className="news-article-card">
+              <div className="news-articles-list">                {filteredArticles.slice(0, 6).map(article => (
+                  <Link key={article.id} to={`/artikel/${article.slug}`} className="news-article-card">
                     <img 
                       src={article.image || '/api/placeholder/300/180'} 
                       alt={article.title}
@@ -203,13 +205,12 @@ const Articles = () => {
                       <div className="news-card-meta">
                         <span className="news-card-author">
                           <FaUser /> {article.author || 'Admin'}
-                        </span>
-                        <span className="news-card-date">
+                        </span>                        <span className="news-card-date">
                           <FaClock /> {formatDate(article.created_at)}
                         </span>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -220,10 +221,9 @@ const Articles = () => {
             {/* Trending Articles */}
             <div className="sidebar-section">
               <h3 className="sidebar-title">Trending</h3>
-              <ul className="trending-list">
-                {trendingArticles.map((article, index) => (
+              <ul className="trending-list">                {trendingArticles.map((article, index) => (
                   <li key={article.id} className="trending-item">
-                    <a href={`/artikel/${article.slug}`} className="trending-link">
+                    <Link to={`/artikel/${article.slug}`} className="trending-link">
                       <span className="trending-number">{index + 1}</span>
                       <div className="trending-content">
                         <h4>{article.title}</h4>
@@ -231,7 +231,7 @@ const Articles = () => {
                           <FaClock /> {formatDate(article.created_at)}
                         </p>
                       </div>
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -274,9 +274,8 @@ const Articles = () => {
         {filteredArticles.length > 6 && (
           <div className="articles-grid">
             <h2>Artikel Lainnya</h2>
-            <div className="news-articles-list">
-              {filteredArticles.slice(6).map(article => (
-                <a key={article.id} href={`/artikel/${article.slug}`} className="news-article-card">
+            <div className="news-articles-list">              {filteredArticles.slice(6).map(article => (
+                <Link key={article.id} to={`/artikel/${article.slug}`} className="news-article-card">
                   <img 
                     src={article.image || '/api/placeholder/300/180'} 
                     alt={article.title}
@@ -293,11 +292,10 @@ const Articles = () => {
                         <FaUser /> {article.author || 'Admin'}
                       </span>
                       <span className="news-card-date">
-                        <FaClock /> {formatDate(article.created_at)}
-                      </span>
+                        <FaClock /> {formatDate(article.created_at)}                      </span>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

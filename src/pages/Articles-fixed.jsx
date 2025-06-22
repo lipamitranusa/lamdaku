@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaClock, FaUser, FaEye } from 'react-icons/fa';
 import apiService from '../services/api';
 import './Articles-detik.css';
@@ -8,6 +9,7 @@ const Articles = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('semua');
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [categories] = useState([
     'semua', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'olahraga'
@@ -149,9 +151,8 @@ const Articles = () => {
 
             {/* News Grid */}
             <div className="news-grid">
-              <div className="news-cards">
-                {filteredArticles.slice(1).map((article, index) => (
-                  <a key={article.id || index} href={`/articles/${article.slug}`} className="news-card">
+              <div className="news-cards">                {filteredArticles.slice(1).map((article, index) => (
+                  <Link key={article.id || index} to={`/artikel/${article.slug}`} className="news-card">
                     <img 
                       src={article.featured_image || '/api/placeholder/300/200'} 
                       alt={article.title}
@@ -165,14 +166,13 @@ const Articles = () => {
                       <p className="news-card-excerpt">{article.excerpt}</p>
                       <div className="news-card-meta">
                         <span className="news-card-author">
-                          <FaUser /> {getAuthorName(article.author)}
-                        </span>
+                          <FaUser /> {getAuthorName(article.author)}                        </span>
                         <span className="news-card-date">
                           <FaClock /> {formatDate(article.created_at)}
                         </span>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -198,10 +198,9 @@ const Articles = () => {
             {/* Trending Articles */}
             <div className="sidebar-section">
               <h3 className="sidebar-title">Trending</h3>
-              <ul className="trending-list">
-                {filteredArticles.slice(0, 5).map((article, index) => (
+              <ul className="trending-list">                {filteredArticles.slice(0, 5).map((article, index) => (
                   <li key={article.id || index} className="trending-item">
-                    <a href={`/articles/${article.slug}`} className="trending-link">
+                    <Link to={`/artikel/${article.slug}`} className="trending-link">
                       <span className="trending-number">{index + 1}</span>
                       <div className="trending-content">
                         <h4>{article.title}</h4>
@@ -209,7 +208,7 @@ const Articles = () => {
                           <FaClock /> {formatDate(article.created_at)}
                         </p>
                       </div>
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -234,9 +233,8 @@ const Articles = () => {
             {/* Latest News */}
             <div className="sidebar-section">
               <h3 className="sidebar-title">Berita Terbaru</h3>
-              <div className="latest-news">
-                {filteredArticles.slice(-3).map((article, index) => (
-                  <a key={article.id || index} href={`/articles/${article.slug}`} className="latest-item">
+              <div className="latest-news">                {filteredArticles.slice(-3).map((article, index) => (
+                  <Link key={article.id || index} to={`/artikel/${article.slug}`} className="latest-item">
                     <img 
                       src={article.featured_image || '/api/placeholder/80/60'} 
                       alt={article.title}
@@ -246,7 +244,7 @@ const Articles = () => {
                       <h4>{article.title}</h4>
                       <p className="latest-date">{formatDate(article.created_at)}</p>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

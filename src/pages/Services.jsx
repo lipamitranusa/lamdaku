@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { FaHospital, FaFlask, FaHeartbeat, FaCertificate, FaUsers, FaShieldAlt, FaCheckCircle, FaClipboardCheck, FaBuilding, FaGraduationCap, FaSearch } from 'react-icons/fa';
 import ApiService from '../services/api';
 
@@ -231,8 +232,8 @@ const Services = () => {
           <p style={{ marginBottom: '2rem', color: '#64748b' }}>
             Hubungi tim ahli kami untuk konsultasi gratis dan dapatkan penawaran terbaik untuk kebutuhan akreditasi Anda.
           </p>
-          <a 
-            href="/contact" 
+          <Link 
+            to="/contact" 
             style={{
               background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
               color: 'white',
@@ -246,7 +247,7 @@ const Services = () => {
             }}
           >
             Konsultasi Gratis Sekarang
-          </a>
+          </Link>
         </div>
       </div>
     </div>
