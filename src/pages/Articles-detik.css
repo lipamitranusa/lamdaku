@@ -309,29 +309,32 @@
 }
 
 .news-card-content {
-  padding: 15px;
+  padding: 24px;
+  line-height: 1.6;
 }
 
 .news-card-category {
   background: #e60012;
   color: white;
-  padding: 3px 6px;
-  border-radius: 3px;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin: 0 4px 12px 4px;
   display: inline-block;
 }
 
 .news-card-title {
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.4;
   color: #333;
-  margin: 0 0 8px 0;
+  margin: 0 0 16px 0;
+  padding: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -339,10 +342,12 @@
 .news-card-excerpt {
   font-size: 13px;
   color: #666;
-  line-height: 1.4;
-  margin: 0 0 10px 0;
+  line-height: 1.5;
+  margin: 0 0 18px 0;
+  padding: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -351,18 +356,83 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
   color: #999;
+  padding: 16px 0 0 0;
+  margin-top: 12px;
+  border-top: 1px solid #eee;
 }
 
 .news-card-author {
-  font-weight: 500;
+  font-weight: 600;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 12px;
+  font-size: 11px;
 }
 
 .news-card-date {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  color: #666;
+  font-weight: 500;
+  padding: 4px 8px;
+  background: rgba(102, 102, 102, 0.1);
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+/* Views Count Styling */
+.news-card-views {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #22c55e;
+  font-weight: 500;
+  padding: 4px 8px;
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+/* Meta information left section */
+.news-card-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+/* Meta information right section */
+.news-card-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Category badge styling */
+.news-card-category {
+  background: linear-gradient(135deg, #e60012, #cc0010);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Icon styling in meta */
+.news-card-meta svg {
+  font-size: 10px;
+  opacity: 0.8;
 }
 
 /* Loading States */
@@ -571,6 +641,65 @@
 
 .clear-filters:hover {
   background: #0056b3;
+}
+
+/* Enhanced spacing for better readability - Articles Page */
+.news-article-card .news-card-content {
+  padding: 22px !important;
+}
+
+.news-article-card .news-card-title {
+  padding: 0 6px !important;
+  margin-bottom: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.news-article-card .news-card-excerpt {
+  padding: 0 6px !important;
+  margin-bottom: 16px !important;
+  line-height: 1.6 !important;
+}
+
+.news-article-card .news-card-category {
+  margin: 0 6px 14px 6px !important;
+  padding: 5px 10px !important;
+}
+
+.news-article-card .news-card-meta {
+  padding: 10px 6px 6px 6px !important;
+  margin-top: 6px !important;
+}
+
+/* Latest items spacing */
+.latest-item .latest-content {
+  padding: 12px !important;
+}
+
+.latest-item .latest-content h4,
+.latest-item .latest-content h5 {
+  margin-bottom: 8px !important;
+  padding: 0 4px !important;
+  line-height: 1.4 !important;
+}
+
+.latest-item .latest-date {
+  padding: 0 4px !important;
+  margin-top: 4px !important;
+}
+
+/* Trending items spacing */
+.trending-item .trending-content {
+  padding: 8px 12px !important;
+}
+
+.trending-item .trending-content h4 {
+  margin-bottom: 6px !important;
+  line-height: 1.4 !important;
+}
+
+.trending-item .meta {
+  margin-top: 4px !important;
+  padding-top: 4px !important;
 }
 
 /* Responsive Design */
